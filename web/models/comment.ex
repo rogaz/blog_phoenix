@@ -1,17 +1,15 @@
-defmodule BlogPhoenix.Post do
+defmodule BlogPhoenix.Comment do
   use BlogPhoenix.Web, :model
-  import Ecto.Query
 
-  schema "posts" do
-    field :title, :string
-    field :body, :string
-
-    has_many :comments, BlogPhoenix.Comment
+  schema "comments" do
+    field :name, :string
+    field :content, :string
+    belongs_to :post, BlogPhoenix.Post, foreign_key: :post_id
 
     timestamps
   end
 
-  @required_fields ~w(title body)
+  @required_fields ~w(name content post_id)
   @optional_fields ~w()
 
   @doc """
@@ -23,12 +21,5 @@ defmodule BlogPhoenix.Post do
   def changeset(model, params \\ :empty) do
     model
     |> cast(params, @required_fields, @optional_fields)
-  end
-
-  def count_comments(query) do
-    from p in query,
-    group_by: p.id,
-    left_join: c in assoc(p, :comments),
-    select: {p, count(c.id)}
   end
 end
